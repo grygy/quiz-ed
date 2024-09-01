@@ -6,4 +6,6 @@ export type GameState = {
   players: Player[];
   questions: Question[];
   quizTitle: string;
+  currentQuestionIndex: number;
+  state: "lobby" | "playing" | "finished";
 };

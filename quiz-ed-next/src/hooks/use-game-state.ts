@@ -3,12 +3,18 @@ import { useMemo } from "react";
 import useStoreState from "./use-store-state";
 
 const useGameState = (gameId: number) => {
+  const BASE_GAME_STATE: GameState = {
+    gameId: gameId,
+    players: [],
+    currentQuestionIndex: 0,
+    questions: [],
+    quizTitle: "",
+    state: "lobby",
+  };
+
   const [gameState, setGameState] = useStoreState(
     "game-state",
-    JSON.stringify({
-      gameId: gameId,
-      players: [],
-    })
+    JSON.stringify(BASE_GAME_STATE)
   );
 
   const updateGameState = (

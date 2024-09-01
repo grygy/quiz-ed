@@ -11,6 +11,8 @@ const AnswerSchema = z.object({
   answerId: z.string(),
 });
 
+export type Answer = z.infer<typeof AnswerSchema>;
+
 const QuestionSchema = z.object({
   id: z.string(),
   question: z.string(),
