@@ -1,11 +1,11 @@
 "use client";
 
 import { HostStage } from "@/app/[gameId]/host/page";
+import Options from "@/components/molecules/options";
 import { goToNextQuestion, isLastQuestion } from "@/game/game-manager";
 import {
   getCurrentQuestion,
   getNumberOfAnswersForCurrentQuestion,
-  getNumberOfAnswersForOption,
   getTotalNumberOfPlayers,
 } from "@/game/question-manager";
 import { GameState } from "@/models/game-state";
@@ -37,33 +37,11 @@ const HostGameStage = ({ setStage, gameState, updateGameState }: Props) => {
         Answered: {numberOfAnswers}/{totalNumberOfPlayers}
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        {currentQuestion.options.map((option, index) => {
-          if (haveAllPlayersAnswered) {
-            const numberOfAnswers = getNumberOfAnswersForOption(
-              option.id,
-              gameState
-            );
-
-            return (
-              <div
-                className={`card ${
-                  option.isCorrect ? "bg-success" : "bg-error"
-                }`}
-                key={option.id}
-              >
-                {index + 1} {option.title} - {numberOfAnswers} answers
-              </div>
-            );
-          }
-
-          return (
-            <div className="card" key={option.id}>
-              {index + 1} {option.title}
-            </div>
-          );
-        })}
-      </div>
+      <Options
+        currentQuestion={currentQuestion}
+        haveAllPlayersAnswered={haveAllPlayersAnswered}
+        gameState={gameState}
+      />
 
       {haveAllPlayersAnswered && (
         <button

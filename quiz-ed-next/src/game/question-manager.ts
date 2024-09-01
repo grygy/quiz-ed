@@ -2,7 +2,7 @@ import { GameState } from "@/models/game-state";
 import { Answer, Question } from "@/models/question";
 import { hasPlayerAnswered } from "./player-manager";
 
-export const getCurrentQuestion = (gameState: GameState) => {
+export const getCurrentQuestion = (gameState: GameState): Question => {
   return gameState.questions[gameState.currentQuestionIndex];
 };
 
