@@ -1,4 +1,5 @@
 import { JOIN_PLAYER_TOPIC } from "@/constants/topic-name";
+import { addOrUpdatePlayer } from "@/game/player-manager";
 import { GameState } from "@/models/game-state";
 import { JoinPlayerPayload } from "@/models/topic-payload";
 import { socket } from "@/socket";
@@ -17,10 +18,8 @@ const useJoinPlayer = (
       }
 
       updateGameState((state) => {
-        return {
-          gameId: state.gameId,
-          players: [...state.players, playerPayload.player],
-        };
+        const newGameState = addOrUpdatePlayer(playerPayload.player, state);
+        return newGameState;
       });
 
       console.log("player joined", playerPayload);
@@ -32,7 +31,7 @@ const useJoinPlayer = (
     return () => {
       socket.off(JOIN_PLAYER_TOPIC);
     };
-  }, []);
+  }, [gameId, updateGameState]);
 };
 
 export default useJoinPlayer;

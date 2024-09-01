@@ -3,18 +3,18 @@
 import { PlayerStage } from "@/app/[gameId]/page";
 import { emitJoinPlayer } from "@/communication/emitter";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { v4 } from "uuid";
 
 type Props = {
   setStage: (stage: PlayerStage) => void;
   gameId: number;
+  visitorId: string;
 };
 
 type NameForm = {
   name: string;
 };
 
-const UsernameStage = ({ setStage, gameId }: Props) => {
+const UsernameStage = ({ setStage, gameId, visitorId }: Props) => {
   const { register, handleSubmit, formState } = useForm<NameForm>();
 
   const onSubmit: SubmitHandler<NameForm> = (data) => {
@@ -22,7 +22,7 @@ const UsernameStage = ({ setStage, gameId }: Props) => {
     emitJoinPlayer({
       gameId: gameId,
       player: {
-        id: v4(),
+        id: visitorId,
         name: data.name,
         score: 0,
       },
