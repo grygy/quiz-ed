@@ -31,6 +31,11 @@ app.prepare().then(() => {
       // Broadcast message to players
       io.emit("game-state", game);
     });
+
+    socket.on("answer", (game) => {
+      // Broadcast message to host
+      io.emit("answer", game);
+    });
   });
 
   httpServer
