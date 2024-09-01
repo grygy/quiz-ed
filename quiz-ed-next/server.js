@@ -1,5 +1,5 @@
-import { createServer } from "node:http";
 import next from "next";
+import { createServer } from "node:http";
 import { Server } from "socket.io";
 
 const dev = process.env.NODE_ENV !== "production";
@@ -19,6 +19,12 @@ app.prepare().then(() => {
     socket.on("message", (message) => {
       // Broadcast message to all connected clients
       io.emit("message", message);
+    });
+
+    socket.on("join-player", (player) => {
+      // Broadcast message to host
+      console.log("Player joined", player);
+      io.emit("join-player", player);
     });
   });
 

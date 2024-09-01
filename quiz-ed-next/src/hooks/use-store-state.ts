@@ -5,40 +5,52 @@ import { subscribe, unsubscribe } from "@/web-api/event";
 import { setToLocalStorage } from "@/web-api/store";
 import { useEffect, useState } from "react";
 
-const useStoreState = <T extends unknown>(
+// Custom hook for managing state in local storage with change listener
+const useStoreState = (
   key: string,
-  initialValue?: T | undefined,
-  onChange?: (newValue: T | undefined) => void
-): [T | undefined, React.Dispatch<React.SetStateAction<T | undefined>>] => {
-  key = `${LOCAL_STORAGE_PREFIX}-${key}`;
-
-  // to silence nextjs RSC errors
+  initialValue?: string | undefined,
+  onChange?: (newValue: string | undefined) => void
+): [
+  string | undefined,
+  React.Dispatch<React.SetStateAction<string | undefined>>
+] => {
+  // Retrieve state from local storage or use the initial value
   const storedValue =
-    typeof localStorage !== "undefined" && !!localStorage.getItem(key)
-      ? (JSON.parse(localStorage.getItem(key) as string) as T)
-      : initialValue;
+    typeof localStorage === "undefined"
+      ? undefined
+      : localStorage.getItem(`${LOCAL_STORAGE_PREFIX}-${key}`) || initialValue;
 
-  const [state, setState] = useState<T | undefined>(storedValue);
-
-  const eventName = `${LOCAL_STORAGE_PREFIX}-${key}`;
+  // State and setter function
+  const [state, setState] = useState<string | undefined>(storedValue);
 
   useEffect(() => {
+    setState(storedValue);
+  }, [storedValue]);
+
+  const eventName = `${LOCAL_STORAGE_PREFIX}-${key}`;
+  key = `${LOCAL_STORAGE_PREFIX}-${key}`;
+
+  // Update local storage when state changes
+  useEffect(() => {
     if (state) {
-      setToLocalStorage(key, eventName, JSON.stringify(state));
+      setToLocalStorage(key, eventName, state.toString());
     } else {
       setToLocalStorage(key, eventName, undefined);
     }
+    // Call the onChange callback when state changes
     if (onChange) {
       onChange(state);
     }
   }, [key, state, onChange, eventName]);
 
+  // Listen for changes in local storage and update state accordingly
   useEffect(() => {
     const handleStorageChange = (event: CustomEvent) => {
       if (event.type === eventName) {
-        const newValue = event.detail.key as T | undefined;
+        const newValue = event.detail.key as string | undefined;
 
         setState(newValue);
+        // Call the onChange callback when storage changes
         if (onChange) {
           onChange(newValue);
         }
