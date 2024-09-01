@@ -28,7 +28,7 @@ export const emitGameState = (
 
   const gameStatePayload: GameStatePayload = { gameId, gameState };
   socket.emit(GAME_STATE_TOPIC, gameStatePayload);
-  console.log("Game state emitted", gameStatePayload);
+  console.log("Game state emitted");
 };
 
 export const emitPlayerAnswer = (

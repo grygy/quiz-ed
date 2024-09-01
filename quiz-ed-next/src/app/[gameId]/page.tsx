@@ -28,6 +28,10 @@ export default function Page({ params }: { params: { gameId: string } }) {
 
   useConnectionLogs();
 
+  const handleSetStage = (stage: PlayerStage) => {
+    setStage(stage);
+  };
+
   useEffect(() => {
     socket.on(GAME_STATE_TOPIC, (gameStatePayload: GameStatePayload) => {
       if (gameStatePayload.gameId !== gameId) {
@@ -38,16 +42,21 @@ export default function Page({ params }: { params: { gameId: string } }) {
         return;
       }
       setGameState({ ...gameStatePayload.gameState });
-      console.log("Game state received", gameStatePayload.gameState);
+      if (gameStatePayload.gameState.state === "finished") {
+        handleSetStage("end");
+      }
+      if (gameStatePayload.gameState.state === "playing") {
+        handleSetStage("game");
+      }
+      if (gameStatePayload.gameState.state === "lobby") {
+        handleSetStage("username");
+      }
+      console.log("Game state received");
     });
     return () => {
       socket.off(GAME_STATE_TOPIC);
     };
   }, []);
-
-  const handleSetStage = (stage: PlayerStage) => {
-    setStage(stage);
-  };
 
   if (!gameId || !isClient || !visitorId || !gameState) {
     return <span className="loading loading-ring loading-lg"></span>;

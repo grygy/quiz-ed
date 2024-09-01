@@ -1,7 +1,13 @@
 "use client";
 
 import { HostStage } from "@/app/[gameId]/host/page";
-import { getCurrentQuestion } from "@/game/question-manager";
+import { goToNextQuestion, isLastQuestion } from "@/game/game-manager";
+import {
+  getCurrentQuestion,
+  getNumberOfAnswersForCurrentQuestion,
+  getNumberOfAnswersForOption,
+  getTotalNumberOfPlayers,
+} from "@/game/question-manager";
 import { GameState } from "@/models/game-state";
 
 type Props = {
@@ -18,22 +24,62 @@ const HostGameStage = ({ setStage, gameState, updateGameState }: Props) => {
   }
 
   const currentQuestion = getCurrentQuestion(gameState);
+  const totalNumberOfPlayers = getTotalNumberOfPlayers(gameState);
+  const numberOfAnswers = getNumberOfAnswersForCurrentQuestion(gameState);
+  const haveAllPlayersAnswered = numberOfAnswers === totalNumberOfPlayers;
+  const isLast = isLastQuestion(gameState);
 
   return (
     <div>
       <h1>{currentQuestion.question}</h1>
 
-      <div className="grid grid-cols-2 gap-4">
-        {currentQuestion.options.map((option, index) => (
-          <div className="card" key={option.id}>
-            {index + 1} {option.title}
-          </div>
-        ))}
+      <div>
+        Answered: {numberOfAnswers}/{totalNumberOfPlayers}
       </div>
 
-      <button className="btn" onClick={() => setStage("results")}>
-        Results
-      </button>
+      <div className="grid grid-cols-2 gap-4">
+        {currentQuestion.options.map((option, index) => {
+          if (haveAllPlayersAnswered) {
+            const numberOfAnswers = getNumberOfAnswersForOption(
+              option.id,
+              gameState
+            );
+
+            return (
+              <div
+                className={`card ${
+                  option.isCorrect ? "bg-success" : "bg-error"
+                }`}
+                key={option.id}
+              >
+                {index + 1} {option.title} - {numberOfAnswers} answers
+              </div>
+            );
+          }
+
+          return (
+            <div className="card" key={option.id}>
+              {index + 1} {option.title}
+            </div>
+          );
+        })}
+      </div>
+
+      {haveAllPlayersAnswered && (
+        <button
+          className="btn"
+          onClick={() => {
+            updateGameState((gameState) => {
+              return goToNextQuestion(gameState);
+            });
+            if (isLast) {
+              setStage("results");
+            }
+          }}
+        >
+          {isLast ? "Results" : "Next Question"}
+        </button>
+      )}
     </div>
   );
 };

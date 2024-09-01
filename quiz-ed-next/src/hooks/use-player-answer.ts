@@ -1,5 +1,5 @@
 import { PLAYER_ANSWER_TOPIC } from "@/constants/topic-name";
-import { addAnswerForQuestion } from "@/game/player-manager";
+import { addAnswerForQuestion } from "@/game/question-manager";
 import { GameState } from "@/models/game-state";
 import { PlayerAnswerPayload } from "@/models/topic-payload";
 import { socket } from "@/socket";

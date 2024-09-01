@@ -45,10 +45,6 @@ const GameStage = ({ setStage, gameState, playerId }: Props) => {
           </button>
         ))}
       </div>
-
-      <button className="btn" onClick={() => setStage("end")}>
-        Finish
-      </button>
     </div>
   );
 };

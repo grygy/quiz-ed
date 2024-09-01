@@ -32,7 +32,11 @@ const useGameState = (gameId: number) => {
     return JSON.parse(gameState!) as GameState;
   }, [gameState]);
 
-  return [parsedGameState, updateGameState] as const;
+  const clearGame = () => {
+    setGameState(JSON.stringify(BASE_GAME_STATE));
+  };
+
+  return { gameState: parsedGameState, updateGameState, clearGame };
 };
 
 export default useGameState;
