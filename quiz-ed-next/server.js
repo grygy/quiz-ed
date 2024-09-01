@@ -26,6 +26,12 @@ app.prepare().then(() => {
       console.log("Player joined", player);
       io.emit("join-player", player);
     });
+
+    socket.on("game-state", (game) => {
+      // Broadcast message to players
+      console.log("Game state", game);
+      io.emit("game-state", game);
+    });
   });
 
   httpServer

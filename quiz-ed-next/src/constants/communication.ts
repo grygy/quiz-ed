@@ -1,0 +1,1 @@
+export const GAME_STATE_UPDATE_INTERVAL_MS = 100;
