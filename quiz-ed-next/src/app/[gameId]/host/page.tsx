@@ -59,7 +59,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
     }, GAME_STATE_UPDATE_INTERVAL_MS);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [gameId, gameState]);
 
   if (!gameId || !gameState || !isClient) {
     return <span className="loading loading-ring loading-lg"></span>;

@@ -6,6 +6,7 @@ import UsernameStage from "@/components/states/player/username-stage";
 import { GAME_STATE_TOPIC } from "@/constants/topic-name";
 import useConnectionLogs from "@/hooks/use-connection-logs";
 import useStoreState from "@/hooks/use-store-state";
+import { GameState } from "@/models/game-state";
 import { GameStatePayload } from "@/models/topic-payload";
 import { socket } from "@/socket";
 import { useEffect, useState } from "react";
@@ -15,6 +16,7 @@ export type PlayerStage = "username" | "game" | "end";
 
 export default function Page({ params }: { params: { gameId: string } }) {
   const [stage, setStage] = useState<PlayerStage>("username");
+  const [gameState, setGameState] = useState<GameState | undefined>();
   const [isClient, setIsClient] = useState(false);
   const [visitorId, _] = useStoreState("visitor-id", v4());
   const gameId = +params.gameId;
@@ -35,7 +37,8 @@ export default function Page({ params }: { params: { gameId: string } }) {
         );
         return;
       }
-      console.log("Game state received");
+      setGameState({ ...gameStatePayload.gameState });
+      console.log("Game state received", gameStatePayload.gameState);
     });
     return () => {
       socket.off(GAME_STATE_TOPIC);
@@ -46,7 +49,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
     setStage(stage);
   };
 
-  if (!gameId || !isClient || !visitorId) {
+  if (!gameId || !isClient || !visitorId || !gameState) {
     return <span className="loading loading-ring loading-lg"></span>;
   }
 
@@ -60,7 +63,13 @@ export default function Page({ params }: { params: { gameId: string } }) {
           visitorId={visitorId}
         />
       )}
-      {stage === "game" && <GameStage setStage={handleSetStage} />}
+      {stage === "game" && (
+        <GameStage
+          setStage={handleSetStage}
+          gameState={gameState}
+          playerId={visitorId}
+        />
+      )}
       {stage === "end" && <EndStage />}
     </>
   );
