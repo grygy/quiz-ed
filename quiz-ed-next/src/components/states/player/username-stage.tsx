@@ -38,7 +38,7 @@ const UsernameStage = ({ setStage, gameId, visitorId }: Props) => {
         className="flex flex-col max-w-sm"
       >
         <input
-          className="input"
+          className="input input-bordered"
           {...register("name", {
             minLength: { value: 2, message: "Name needs to be longer" },
           })}

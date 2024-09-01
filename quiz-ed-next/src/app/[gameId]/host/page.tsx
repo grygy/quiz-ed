@@ -46,7 +46,10 @@ export default function Page({ params }: { params: { gameId: string } }) {
       )}
 
       {stage === "uploadQuestions" && (
-        <UploadQuestionStage setStage={handleSetStage} />
+        <UploadQuestionStage
+          setStage={handleSetStage}
+          updateGameState={updateGameState}
+        />
       )}
       {stage === "startSession" && (
         <StartSessionStage setStage={handleSetStage} />
