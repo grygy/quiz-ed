@@ -3,12 +3,10 @@
 import EndStage from "@/components/states/player/end-stage";
 import GameStage from "@/components/states/player/game-stage";
 import UsernameStage from "@/components/states/player/username-stage";
-import { GAME_STATE_TOPIC } from "@/constants/topic-name";
 import useConnectionLogs from "@/hooks/use-connection-logs";
+import useGameStatePlayer from "@/hooks/use-game-state-player";
 import useStoreState from "@/hooks/use-store-state";
 import { GameState } from "@/models/game-state";
-import { GameStatePayload } from "@/models/topic-payload";
-import { socket } from "@/socket";
 import { useEffect, useState } from "react";
 import { v4 } from "uuid";
 
@@ -32,31 +30,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
     setStage(stage);
   };
 
-  useEffect(() => {
-    socket.on(GAME_STATE_TOPIC, (gameStatePayload: GameStatePayload) => {
-      if (gameStatePayload.gameId !== gameId) {
-        console.log(
-          "Game state received for different game id",
-          gameStatePayload.gameId
-        );
-        return;
-      }
-      setGameState({ ...gameStatePayload.gameState });
-      if (gameStatePayload.gameState.state === "finished") {
-        handleSetStage("end");
-      }
-      if (gameStatePayload.gameState.state === "playing") {
-        handleSetStage("game");
-      }
-      if (gameStatePayload.gameState.state === "lobby") {
-        handleSetStage("username");
-      }
-      console.log("Game state received");
-    });
-    return () => {
-      socket.off(GAME_STATE_TOPIC);
-    };
-  }, []);
+  useGameStatePlayer(gameId, setGameState, handleSetStage);
 
   if (!gameId || !isClient || !visitorId || !gameState) {
     return <span className="loading loading-ring loading-lg"></span>;
