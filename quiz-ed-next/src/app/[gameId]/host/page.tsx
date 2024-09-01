@@ -40,11 +40,6 @@ export default function Page({ params }: { params: { gameId: string } }) {
     <>
       <div className="">HOST, Game id:{gameId}</div>
 
-      <div>players:</div>
-      {gameState && (
-        <div>{gameState?.players.map((player) => player.name).join(", ")}</div>
-      )}
-
       {stage === "uploadQuestions" && (
         <UploadQuestionStage
           setStage={handleSetStage}
@@ -52,7 +47,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
         />
       )}
       {stage === "startSession" && (
-        <StartSessionStage setStage={handleSetStage} />
+        <StartSessionStage setStage={handleSetStage} gameState={gameState} />
       )}
       {stage === "hostGame" && <HostGameStage setStage={handleSetStage} />}
       {stage === "results" && <ResultsStage />}
