@@ -8,6 +8,7 @@ import UploadQuestionStage from "@/components/states/host/upload-questions-stage
 import { GAME_STATE_UPDATE_INTERVAL_MS } from "@/constants/communication";
 import useGameState from "@/hooks/use-game-state";
 import useJoinPlayer from "@/hooks/use-join-player";
+import usePlayerAnswer from "@/hooks/use-player-answer";
 import { GameState } from "@/models/game-state";
 import { useEffect, useState } from "react";
 
@@ -52,6 +53,8 @@ export default function Page({ params }: { params: { gameId: string } }) {
   }, []);
 
   useJoinPlayer(gameId, updateGameState);
+
+  usePlayerAnswer(gameId, updateGameState);
 
   useEffect(() => {
     const interval = setInterval(() => {

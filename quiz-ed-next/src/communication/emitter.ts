@@ -1,6 +1,15 @@
-import { GAME_STATE_TOPIC, JOIN_PLAYER_TOPIC } from "@/constants/topic-name";
+import {
+  GAME_STATE_TOPIC,
+  JOIN_PLAYER_TOPIC,
+  PLAYER_ANSWER_TOPIC,
+} from "@/constants/topic-name";
 import { GameState } from "@/models/game-state";
-import { GameStatePayload, JoinPlayerPayload } from "@/models/topic-payload";
+import { Answer } from "@/models/question";
+import {
+  GameStatePayload,
+  JoinPlayerPayload,
+  PlayerAnswerPayload,
+} from "@/models/topic-payload";
 import { socket } from "@/socket";
 
 export const emitJoinPlayer = (playerPayload: JoinPlayerPayload) => {
@@ -20,4 +29,14 @@ export const emitGameState = (
   const gameStatePayload: GameStatePayload = { gameId, gameState };
   socket.emit(GAME_STATE_TOPIC, gameStatePayload);
   console.log("Game state emitted", gameStatePayload);
+};
+
+export const emitPlayerAnswer = (
+  gameId: number,
+  questionId: string,
+  answer: Answer
+) => {
+  const payload: PlayerAnswerPayload = { gameId, questionId, answer };
+  socket.emit(PLAYER_ANSWER_TOPIC, payload);
+  console.log("Player answer emitted", questionId, answer);
 };

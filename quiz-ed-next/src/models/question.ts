@@ -8,7 +8,7 @@ const OptionSchema = z.object({
 
 const AnswerSchema = z.object({
   playerId: z.string(),
-  answerId: z.string(),
+  optionId: z.string(),
 });
 
 export type Answer = z.infer<typeof AnswerSchema>;
