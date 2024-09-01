@@ -5,11 +5,10 @@ import ResultsStage from "@/components/states/host/reults-stage";
 import StartSessionStage from "@/components/states/host/start-session-stage";
 import UploadQuestionStage from "@/components/states/host/upload-questions-stage";
 import { JOIN_PLAYER_TOPIC } from "@/constants/topic-name";
-import useStoreState from "@/hooks/use-store-state";
-import { GameState } from "@/models/game-state";
+import useGameState from "@/hooks/use-game-state";
 import { JoinPlayerPayload } from "@/models/topic-payload";
 import { socket } from "@/socket";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 export type HostStage =
   | "uploadQuestions"
@@ -22,20 +21,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
   const [isClient, setIsClient] = useState(false);
   const gameId = +params.gameId;
 
-  const [gameState, setGameState] = useStoreState(
-    "game-state",
-    JSON.stringify({
-      gameId: gameId,
-      players: [],
-    })
-  );
-
-  const parsedGameState = useMemo(() => {
-    if (!gameState) {
-      return undefined;
-    }
-    return JSON.parse(gameState!) as GameState;
-  }, [gameState]);
+  const [gameState, updateGameState] = useGameState(gameId);
 
   const handleSetStage = (stage: HostStage) => {
     setStage(stage);
@@ -52,12 +38,11 @@ export default function Page({ params }: { params: { gameId: string } }) {
         console.log("player joined wrong game", playerPayload);
       }
 
-      setGameState((state) => {
-        const parsed = JSON.parse(state!) as GameState;
-        return JSON.stringify({
-          gameId: parsed.gameId,
-          players: [...parsed.players, playerPayload.player],
-        });
+      updateGameState((state) => {
+        return {
+          gameId: state.gameId,
+          players: [...state.players, playerPayload.player],
+        };
       });
 
       console.log("player joined", playerPayload);
@@ -71,7 +56,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
     };
   }, []);
 
-  if (!gameId || !parsedGameState || !isClient) {
+  if (!gameId || !gameState || !isClient) {
     return <span className="loading loading-ring loading-lg"></span>;
   }
 
@@ -80,10 +65,8 @@ export default function Page({ params }: { params: { gameId: string } }) {
       <div className="">HOST, Game id:{gameId}</div>
 
       <div>players:</div>
-      {parsedGameState && (
-        <div>
-          {parsedGameState?.players.map((player) => player.name).join(", ")}
-        </div>
+      {gameState && (
+        <div>{gameState?.players.map((player) => player.name).join(", ")}</div>
       )}
 
       {stage === "uploadQuestions" && (
