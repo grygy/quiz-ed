@@ -1,6 +1,9 @@
 import { Player } from "./player";
+import { Question } from "./question";
 
 export type GameState = {
   gameId: number;
   players: Player[];
+  questions: Question[];
+  quizTitle: string;
 };
