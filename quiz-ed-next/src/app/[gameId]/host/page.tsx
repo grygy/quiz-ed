@@ -23,7 +23,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
   const [isClient, setIsClient] = useState(false);
   const gameId = +params.gameId;
 
-  const [gameState, updateGameState] = useGameState(gameId);
+  const { gameState, updateGameState, clearGame } = useGameState(gameId);
 
   const handleSetStage = (stage: HostStage) => {
     if (stage === "hostGame") {
@@ -31,15 +31,6 @@ export default function Page({ params }: { params: { gameId: string } }) {
         const newGameState: GameState = {
           ...gameState,
           state: "playing",
-        };
-        return newGameState;
-      });
-    }
-    if (stage === "results") {
-      updateGameState((gameState) => {
-        const newGameState: GameState = {
-          ...gameState,
-          state: "finished",
         };
         return newGameState;
       });
@@ -89,6 +80,15 @@ export default function Page({ params }: { params: { gameId: string } }) {
         />
       )}
       {stage === "results" && <ResultsStage />}
+      <button
+        className="btn btn-error"
+        onClick={() => {
+          setStage("uploadQuestions");
+          clearGame();
+        }}
+      >
+        CLEAR ALL
+      </button>
     </>
   );
 }
