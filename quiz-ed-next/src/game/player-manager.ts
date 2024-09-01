@@ -21,3 +21,8 @@ export const addOrUpdatePlayer = (
     ],
   };
 };
+
+export const getPlayer = (playerId: string, gameState: GameState) => {
+  const player = gameState.players.find((p) => p.id === playerId);
+  return player;
+};

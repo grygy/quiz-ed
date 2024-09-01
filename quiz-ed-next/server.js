@@ -29,7 +29,6 @@ app.prepare().then(() => {
 
     socket.on("game-state", (game) => {
       // Broadcast message to players
-      console.log("Game state", game);
       io.emit("game-state", game);
     });
   });
