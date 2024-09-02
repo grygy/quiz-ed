@@ -10,6 +10,7 @@ const useGameState = (gameId: number) => {
     questions: [],
     quizTitle: "",
     state: "lobby",
+    questionState: "reading",
   };
 
   const [gameState, setGameState] = useStoreState(

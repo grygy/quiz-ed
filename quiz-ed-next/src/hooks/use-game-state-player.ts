@@ -31,7 +31,7 @@ const useGameStatePlayer = (
     return () => {
       socket.off(GAME_STATE_TOPIC);
     };
-  }, []);
+  }, [gameId, handleSetStage, setGameState]);
 };
 
 export default useGameStatePlayer;

@@ -6,6 +6,8 @@ const OptionSchema = z.object({
   isCorrect: z.boolean(),
 });
 
+export type Option = z.infer<typeof OptionSchema>;
+
 const AnswerSchema = z.object({
   playerId: z.string(),
   optionId: z.string(),

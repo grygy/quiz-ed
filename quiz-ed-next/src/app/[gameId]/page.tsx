@@ -47,11 +47,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
         />
       )}
       {stage === "game" && (
-        <GameStage
-          setStage={handleSetStage}
-          gameState={gameState}
-          playerId={visitorId}
-        />
+        <GameStage gameState={gameState} playerId={visitorId} />
       )}
       {stage === "end" && <EndStage />}
     </>
