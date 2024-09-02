@@ -63,7 +63,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
           updateGameState={updateGameState}
         />
       )}
-      {stage === "results" && <ResultsStage />}
+      {stage === "results" && <ResultsStage gameState={gameState} />}
       <button
         className="btn btn-error"
         onClick={() => {
