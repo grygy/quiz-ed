@@ -8,7 +8,8 @@ import useGameState from "@/hooks/use-game-state";
 import useGameUpdate from "@/hooks/use-game-update";
 import useJoinPlayer from "@/hooks/use-join-player";
 import usePlayerAnswer from "@/hooks/use-player-answer";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useIsClient } from "usehooks-ts";
 
 export type HostStage =
   | "uploadQuestions"
@@ -18,7 +19,8 @@ export type HostStage =
 
 export default function Page({ params }: { params: { gameId: string } }) {
   const [stage, setStage] = useState<HostStage>("uploadQuestions");
-  const [isClient, setIsClient] = useState(false);
+  // prevent hydration errors
+  const isClient = useIsClient();
   const gameId = +params.gameId;
 
   const { gameState, updateGameState, clearGame } = useGameState(gameId);
@@ -26,11 +28,6 @@ export default function Page({ params }: { params: { gameId: string } }) {
   const handleSetStage = (stage: HostStage) => {
     setStage(stage);
   };
-
-  useEffect(() => {
-    // to prevent hydration errors
-    setIsClient(true);
-  }, []);
 
   useJoinPlayer(gameId, updateGameState);
 
