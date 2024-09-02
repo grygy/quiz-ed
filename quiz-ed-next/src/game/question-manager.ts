@@ -81,7 +81,6 @@ export const getNumberOfAnswersForOption = (
   optionId: string,
   gameState: GameState
 ) => {
-  const options = gameState.questions.map((q) => q.options).flat();
   const answers = gameState.questions.map((q) => q.answers).flat();
   return answers.filter((a) => a.optionId === optionId).length;
 };
