@@ -7,7 +7,8 @@ import useConnectionLogs from "@/hooks/use-connection-logs";
 import useGameStatePlayer from "@/hooks/use-game-state-player";
 import useStoreState from "@/hooks/use-store-state";
 import { GameState } from "@/models/game-state";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useIsClient } from "usehooks-ts";
 import { v4 } from "uuid";
 
 export type PlayerStage = "username" | "game" | "end";
@@ -15,14 +16,10 @@ export type PlayerStage = "username" | "game" | "end";
 export default function Page({ params }: { params: { gameId: string } }) {
   const [stage, setStage] = useState<PlayerStage>("username");
   const [gameState, setGameState] = useState<GameState | undefined>();
-  const [isClient, setIsClient] = useState(false);
+  // prevent hydration errors
+  const isClient = useIsClient();
   const [visitorId, _] = useStoreState("visitor-id", v4());
   const gameId = +params.gameId;
-
-  useEffect(() => {
-    // to prevent hydration errors
-    setIsClient(true);
-  }, []);
 
   useConnectionLogs();
 

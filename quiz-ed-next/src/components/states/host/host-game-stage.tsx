@@ -9,6 +9,7 @@ import {
   getTotalNumberOfPlayers,
 } from "@/game/question-manager";
 import { GameState } from "@/models/game-state";
+import { useEffect } from "react";
 
 type Props = {
   setStage: (stage: HostStage) => void;
@@ -19,6 +20,12 @@ type Props = {
 };
 
 const HostGameStage = ({ setStage, gameState, updateGameState }: Props) => {
+  useEffect(() => {
+    if (isLastQuestion(gameState)) {
+      setStage("results");
+    }
+  }, [gameState, setStage]);
+
   if (gameState.state !== "playing") {
     return <h1>Invalid state {gameState.state}</h1>;
   }
