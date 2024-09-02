@@ -1,5 +1,5 @@
 import { GameState } from "@/models/game-state";
-import { Answer, Question } from "@/models/question";
+import { Answer, Option, Question } from "@/models/question";
 import { hasPlayerAnswered } from "./player-manager";
 
 export const getCurrentQuestion = (gameState: GameState): Question => {
@@ -83,4 +83,25 @@ export const getNumberOfAnswersForOption = (
 ) => {
   const answers = gameState.questions.map((q) => q.answers).flat();
   return answers.filter((a) => a.optionId === optionId).length;
+};
+
+export const getOptionForQuestionById = (
+  optionId: string,
+  question: Question
+): Option | undefined => {
+  return question.options.find((o) => o.id === optionId);
+};
+
+export const isPlayersAnswerCorrect = (
+  playerId: string,
+  currentQuestion: Question
+) => {
+  const playerAnswer = currentQuestion.answers.find(
+    (a) => a.playerId === playerId
+  );
+  const option = getOptionForQuestionById(
+    playerAnswer?.optionId || "",
+    currentQuestion
+  );
+  return option?.isCorrect || false;
 };

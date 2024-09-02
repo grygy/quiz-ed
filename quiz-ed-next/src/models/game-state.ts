@@ -8,4 +8,5 @@ export type GameState = {
   quizTitle: string;
   currentQuestionIndex: number;
   state: "lobby" | "playing" | "finished";
+  questionState: "reading" | "answering" | "result";
 };

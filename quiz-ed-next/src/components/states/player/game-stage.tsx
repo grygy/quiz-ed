@@ -1,18 +1,19 @@
 "use client";
 
-import { PlayerStage } from "@/app/[gameId]/page";
 import { emitPlayerAnswer } from "@/communication/emitter";
 import { getPlayer, hasPlayerAnswered } from "@/game/player-manager";
-import { getCurrentQuestion } from "@/game/question-manager";
+import {
+  getCurrentQuestion,
+  isPlayersAnswerCorrect,
+} from "@/game/question-manager";
 import { GameState } from "@/models/game-state";
 
 type Props = {
-  setStage: (stage: PlayerStage) => void;
   gameState: GameState;
   playerId: string;
 };
 
-const GameStage = ({ setStage, gameState, playerId }: Props) => {
+const GameStage = ({ gameState, playerId }: Props) => {
   const player = getPlayer(playerId, gameState);
 
   if (gameState.state === "lobby") {
@@ -27,6 +28,16 @@ const GameStage = ({ setStage, gameState, playerId }: Props) => {
       optionId: optionId,
     });
   };
+
+  const isPlayersCorrect = isPlayersAnswerCorrect(playerId, currentQuestion);
+
+  if (gameState.questionState === "reading") {
+    return <h3>Reading...</h3>;
+  }
+
+  if (gameState.questionState === "result") {
+    return <h3>{isPlayersCorrect ? "Correct" : "Wrong"}</h3>;
+  }
 
   if (hasPlayerAnswered(playerId, currentQuestion)) {
     return <h3>Waiting for other players to answer...</h3>;
