@@ -46,7 +46,9 @@ export default function Page({ params }: { params: { gameId: string } }) {
       {stage === "game" && (
         <GameStage gameState={gameState} playerId={visitorId} />
       )}
-      {stage === "end" && <EndStage />}
+      {stage === "end" && (
+        <EndStage gameState={gameState} playerId={visitorId} />
+      )}
     </>
   );
 }

@@ -33,3 +33,18 @@ export const changeQuestionState = (
     questionState,
   };
 };
+
+export const getPlayersOrderedByScore = (gameState: GameState) => {
+  return gameState.players.sort((a, b) => b.score - a.score);
+};
+
+export const getPlayerScore = (gameState: GameState, playerId: string) => {
+  const player = gameState.players.find((p) => p.id === playerId);
+  return player?.score;
+};
+
+export const getPlayerRank = (gameState: GameState, playerId: string) => {
+  const orderedPlayers = getPlayersOrderedByScore(gameState);
+  const playerIndex = orderedPlayers.findIndex((p) => p.id === playerId);
+  return playerIndex + 1;
+};

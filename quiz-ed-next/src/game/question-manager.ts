@@ -1,4 +1,6 @@
+import { BASE_POINTS, MINIMUM_POINTS } from "@/constants/game-config";
 import { GameState } from "@/models/game-state";
+import { Player } from "@/models/player";
 import { Answer, Option, Question } from "@/models/question";
 import {
   getPlayersThatDidNotAnswer,
@@ -40,6 +42,27 @@ const findQuestionIndex = (questionId: string, gameState: GameState) => {
   return gameState.questions.findIndex((q) => q.id === questionId);
 };
 
+const getNumberOfCorrectAnswers = (question: Question) => {
+  return question.answers.filter(
+    (answer) =>
+      answer.optionId &&
+      getOptionForQuestionById(answer.optionId, question)?.isCorrect
+  ).length;
+};
+
+const calculatePoints = (
+  totalPlayers: number,
+  correctAnswers: number
+): number => {
+  const correctAnswerRatio: number = correctAnswers / totalPlayers;
+
+  const pointsModifier: number = 1 - correctAnswerRatio;
+
+  const finalPoints: number = BASE_POINTS * pointsModifier + MINIMUM_POINTS;
+
+  return Math.round(finalPoints);
+};
+
 export const addAnswerForQuestion = (
   questionId: string,
   answer: Answer,
@@ -56,19 +79,43 @@ export const addAnswerForQuestion = (
     return gameState;
   }
 
-  const newQuestion = {
+  const totalNumberOfPlayers = gameState.players.length;
+  const totalNumberOfCorrectAnswers = getNumberOfCorrectAnswers(question);
+  const isAnswerCorrect = answer.optionId
+    ? getOptionForQuestionById(answer.optionId, question)?.isCorrect
+    : false;
+  const pointsForAnswer = isAnswerCorrect
+    ? calculatePoints(totalNumberOfPlayers, totalNumberOfCorrectAnswers)
+    : 0;
+
+  const newQuestion: Question = {
     ...question,
     answers: [...question.answers, answer],
   };
 
-  return {
+  const newPlayers: Player[] = [
+    ...gameState.players.map((player) => {
+      if (player.id === answer.playerId) {
+        return {
+          ...player,
+          score: player.score + pointsForAnswer,
+        };
+      }
+      return player;
+    }),
+  ];
+
+  const newGameState: GameState = {
     ...gameState,
     questions: [
       ...gameState.questions.slice(0, questionIndex),
       newQuestion,
       ...gameState.questions.slice(questionIndex + 1),
     ],
+    players: newPlayers,
   };
+
+  return newGameState;
 };
 
 export const getNumberOfAnswersForCurrentQuestion = (gameState: GameState) => {
@@ -93,6 +140,11 @@ export const getOptionForQuestionById = (
   question: Question
 ): Option | undefined => {
   return question.options.find((o) => o.id === optionId);
+};
+
+export const getOptionById = (optionId: string, gameState: GameState) => {
+  const currentQuestion = getCurrentQuestion(gameState);
+  return getOptionForQuestionById(optionId, currentQuestion);
 };
 
 export const isPlayersAnswerCorrect = (
