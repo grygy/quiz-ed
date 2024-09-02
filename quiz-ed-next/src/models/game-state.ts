@@ -1,6 +1,8 @@
 import { Player } from "./player";
 import { Question } from "./question";
 
+export type QuestionState = "reading" | "answering" | "result";
+
 export type GameState = {
   gameId: number;
   players: Player[];
@@ -8,5 +10,5 @@ export type GameState = {
   quizTitle: string;
   currentQuestionIndex: number;
   state: "lobby" | "playing" | "finished";
-  questionState: "reading" | "answering" | "result";
+  questionState: QuestionState;
 };

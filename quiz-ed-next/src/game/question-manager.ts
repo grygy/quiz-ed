@@ -1,6 +1,9 @@
 import { GameState } from "@/models/game-state";
 import { Answer, Option, Question } from "@/models/question";
-import { hasPlayerAnswered } from "./player-manager";
+import {
+  getPlayersThatDidNotAnswer,
+  hasPlayerAnswered,
+} from "./player-manager";
 
 export const getCurrentQuestion = (gameState: GameState): Question => {
   return gameState.questions[gameState.currentQuestionIndex];
@@ -104,4 +107,36 @@ export const isPlayersAnswerCorrect = (
     currentQuestion
   );
   return option?.isCorrect || false;
+};
+
+export const finishQuestion = (gameState: GameState): GameState => {
+  const currentQuestion = getCurrentQuestion(gameState);
+
+  const playersThatDidNotAnswer = getPlayersThatDidNotAnswer(
+    currentQuestion,
+    gameState
+  );
+
+  const currentQuestionWithFilledAnswers: Question = {
+    ...currentQuestion,
+    answers: [
+      ...currentQuestion.answers,
+      ...playersThatDidNotAnswer.map((player) => ({
+        playerId: player.id,
+        optionId: null,
+      })),
+    ],
+  };
+
+  const newState: GameState = {
+    ...gameState,
+    questions: [
+      ...gameState.questions.slice(0, gameState.currentQuestionIndex),
+      currentQuestionWithFilledAnswers,
+      ...gameState.questions.slice(gameState.currentQuestionIndex + 1),
+    ],
+    questionState: "result",
+  };
+
+  return newState;
 };
