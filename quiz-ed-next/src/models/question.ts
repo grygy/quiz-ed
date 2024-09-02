@@ -10,7 +10,7 @@ export type Option = z.infer<typeof OptionSchema>;
 
 const AnswerSchema = z.object({
   playerId: z.string(),
-  optionId: z.string(),
+  optionId: z.string().nullable(),
 });
 
 export type Answer = z.infer<typeof AnswerSchema>;

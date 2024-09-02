@@ -2,14 +2,20 @@
 
 import { HostStage } from "@/app/[gameId]/host/page";
 import Options from "@/components/molecules/options";
-import { goToNextQuestion, isLastQuestion } from "@/game/game-manager";
 import {
+  changeQuestionState,
+  goToNextQuestion,
+  isLastQuestion,
+} from "@/game/game-manager";
+import {
+  finishQuestion,
   getCurrentQuestion,
   getNumberOfAnswersForCurrentQuestion,
   getTotalNumberOfPlayers,
 } from "@/game/question-manager";
 import { GameState } from "@/models/game-state";
 import { useEffect } from "react";
+import { useCountdown } from "usehooks-ts";
 
 type Props = {
   setStage: (stage: HostStage) => void;
@@ -20,25 +26,87 @@ type Props = {
 };
 
 const HostGameStage = ({ setStage, gameState, updateGameState }: Props) => {
-  useEffect(() => {
-    if (isLastQuestion(gameState)) {
-      setStage("results");
-    }
-  }, [gameState, setStage]);
-
-  if (gameState.state !== "playing") {
-    return <h1>Invalid state {gameState.state}</h1>;
-  }
-
   const currentQuestion = getCurrentQuestion(gameState);
   const totalNumberOfPlayers = getTotalNumberOfPlayers(gameState);
   const numberOfAnswers = getNumberOfAnswersForCurrentQuestion(gameState);
   const haveAllPlayersAnswered = numberOfAnswers === totalNumberOfPlayers;
   const isLast = isLastQuestion(gameState);
 
+  const [
+    remainingReadingTimeInSeconds,
+    {
+      startCountdown: startRemainingReadingTimeInSeconds,
+      resetCountdown: resetReadingTime,
+    },
+  ] = useCountdown({
+    countStart: currentQuestion.timeToReadInSeconds,
+  });
+
+  const [
+    remainingAnswerTimeInSeconds,
+    {
+      startCountdown: startRemainingAnswerTimeInSeconds,
+      resetCountdown: resetAnswerTime,
+    },
+  ] = useCountdown({
+    countStart: currentQuestion.timeLimitInSeconds,
+  });
+
+  useEffect(() => {
+    if (
+      (gameState.currentQuestionIndex === 0,
+      gameState.questionState === "reading")
+    ) {
+      startRemainingReadingTimeInSeconds();
+    }
+  }, [
+    gameState.currentQuestionIndex,
+    gameState.questionState,
+    startRemainingReadingTimeInSeconds,
+  ]);
+
+  useEffect(() => {
+    if (remainingReadingTimeInSeconds <= 0.0001) {
+      startRemainingAnswerTimeInSeconds();
+      resetReadingTime();
+      updateGameState((gameState) => {
+        return changeQuestionState(gameState, "answering");
+      });
+    }
+  }, [
+    remainingReadingTimeInSeconds,
+    startRemainingAnswerTimeInSeconds,
+    updateGameState,
+    resetReadingTime,
+  ]);
+
+  useEffect(() => {
+    if (remainingAnswerTimeInSeconds <= 0.0001 || haveAllPlayersAnswered) {
+      resetAnswerTime();
+      updateGameState((gameState) => {
+        return finishQuestion(gameState);
+      });
+    }
+  }, [
+    remainingReadingTimeInSeconds,
+    startRemainingAnswerTimeInSeconds,
+    updateGameState,
+    resetReadingTime,
+    remainingAnswerTimeInSeconds,
+    resetAnswerTime,
+    haveAllPlayersAnswered,
+  ]);
+
+  if (gameState.state !== "playing") {
+    return <h1>Invalid state {gameState.state}</h1>;
+  }
+
   return (
     <div>
       <h1>{currentQuestion.question}</h1>
+
+      <div>Reading time: {remainingReadingTimeInSeconds} seconds</div>
+      <div>Answer time: {remainingAnswerTimeInSeconds} seconds</div>
 
       <div>
         Answered: {numberOfAnswers}/{totalNumberOfPlayers}
@@ -57,6 +125,7 @@ const HostGameStage = ({ setStage, gameState, updateGameState }: Props) => {
             updateGameState((gameState) => {
               return goToNextQuestion(gameState);
             });
+            startRemainingReadingTimeInSeconds();
             if (isLast) {
               setStage("results");
             }

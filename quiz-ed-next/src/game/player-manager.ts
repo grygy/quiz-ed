@@ -31,3 +31,12 @@ export const getPlayer = (playerId: string, gameState: GameState) => {
 export const hasPlayerAnswered = (playerId: string, question: Question) => {
   return question.answers.some((answer) => answer.playerId === playerId);
 };
+
+export const getPlayersThatDidNotAnswer = (
+  question: Question,
+  gameState: GameState
+) => {
+  return gameState.players.filter(
+    (player) => !hasPlayerAnswered(player.id, question)
+  );
+};
