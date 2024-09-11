@@ -38,7 +38,7 @@ export const addAnswerToCurrentQuestion = (
   return newState;
 };
 
-const findQuestionIndex = (questionId: string, gameState: GameState) => {
+const findQuestionIndex = (gameState: GameState, questionId: string) => {
   return gameState.questions.findIndex((q) => q.id === questionId);
 };
 
@@ -46,7 +46,7 @@ const getNumberOfCorrectAnswers = (question: Question) => {
   return question.answers.filter(
     (answer) =>
       answer.optionId &&
-      getOptionForQuestionById(answer.optionId, question)?.isCorrect
+      getOptionForQuestionById(question, answer.optionId)?.isCorrect
   ).length;
 };
 
@@ -64,25 +64,25 @@ const calculatePoints = (
 };
 
 export const addAnswerForQuestion = (
+  gameState: GameState,
   questionId: string,
-  answer: Answer,
-  gameState: GameState
+  answer: Answer
 ): GameState => {
-  const questionIndex = findQuestionIndex(questionId, gameState);
+  const questionIndex = findQuestionIndex(gameState, questionId);
   if (questionIndex === -1) {
     return gameState;
   }
 
   const question = gameState.questions[questionIndex];
 
-  if (hasPlayerAnswered(answer.playerId, question)) {
+  if (hasPlayerAnswered(question, answer.playerId)) {
     return gameState;
   }
 
   const totalNumberOfPlayers = gameState.players.length;
   const totalNumberOfCorrectAnswers = getNumberOfCorrectAnswers(question);
   const isAnswerCorrect = answer.optionId
-    ? getOptionForQuestionById(answer.optionId, question)?.isCorrect
+    ? getOptionForQuestionById(question, answer.optionId)?.isCorrect
     : false;
   const pointsForAnswer = isAnswerCorrect
     ? calculatePoints(totalNumberOfPlayers, totalNumberOfCorrectAnswers)
@@ -128,23 +128,23 @@ export const getTotalNumberOfPlayers = (gameState: GameState) => {
 };
 
 export const getNumberOfAnswersForOption = (
-  optionId: string,
-  gameState: GameState
+  gameState: GameState,
+  optionId: string
 ) => {
   const answers = gameState.questions.map((q) => q.answers).flat();
   return answers.filter((a) => a.optionId === optionId).length;
 };
 
 export const getOptionForQuestionById = (
-  optionId: string,
-  question: Question
+  question: Question,
+  optionId: string
 ): Option | undefined => {
   return question.options.find((o) => o.id === optionId);
 };
 
-export const getOptionById = (optionId: string, gameState: GameState) => {
+export const getOptionById = (gameState: GameState, optionId: string) => {
   const currentQuestion = getCurrentQuestion(gameState);
-  return getOptionForQuestionById(optionId, currentQuestion);
+  return getOptionForQuestionById(currentQuestion, optionId);
 };
 
 export const isPlayersAnswerCorrect = (
@@ -155,8 +155,8 @@ export const isPlayersAnswerCorrect = (
     (a) => a.playerId === playerId
   );
   const option = getOptionForQuestionById(
-    playerAnswer?.optionId || "",
-    currentQuestion
+    currentQuestion,
+    playerAnswer?.optionId || ""
   );
   return option?.isCorrect || false;
 };
@@ -165,8 +165,8 @@ export const finishQuestion = (gameState: GameState): GameState => {
   const currentQuestion = getCurrentQuestion(gameState);
 
   const playersThatDidNotAnswer = getPlayersThatDidNotAnswer(
-    currentQuestion,
-    gameState
+    gameState,
+    currentQuestion
   );
 
   const currentQuestionWithFilledAnswers: Question = {

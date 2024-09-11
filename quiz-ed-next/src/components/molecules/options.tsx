@@ -18,8 +18,8 @@ const Options = ({
       {currentQuestion.options.map((option, index) => {
         if (haveAllPlayersAnswered) {
           const numberOfAnswers = getNumberOfAnswersForOption(
-            option.id,
-            gameState
+            gameState,
+            option.id
           );
 
           return (
