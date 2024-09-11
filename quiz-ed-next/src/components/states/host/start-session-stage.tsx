@@ -2,6 +2,7 @@
 
 import { HostStage } from "@/app/[gameId]/host/page";
 import { GameState } from "@/models/game-state";
+import Button from "@kiwicom/orbit-components/lib/Button";
 
 type Props = {
   setStage: (stage: HostStage) => void;
@@ -19,21 +20,20 @@ const StartSessionStage = ({ setStage, gameState, updateGameState }: Props) => {
       {gameState && (
         <div>{gameState?.players.map((player) => player.name).join(", ")}</div>
       )}
-      <button
-        className="btn"
-        onClick={() => {
-          updateGameState((gameState) => {
-            const newGameState: GameState = {
-              ...gameState,
-              state: "playing",
-            };
-            return newGameState;
-          });
-          setStage("hostGame");
-        }}
+      <Button
+      // onClick={() => {
+      //   updateGameState((gameState) => {
+      //     const newGameState: GameState = {
+      //       ...gameState,
+      //       state: "playing",
+      //     };
+      //     return newGameState;
+      //   });
+      //   setStage("hostGame");
+      // }}
       >
         Start
-      </button>
+      </Button>
     </div>
   );
 };

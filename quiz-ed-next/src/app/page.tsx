@@ -1,6 +1,7 @@
 "use client";
 
 import { socket } from "@/socket";
+import { Button } from "@kiwicom/orbit-components";
 import { useEffect, useState } from "react";
 
 export default function Home() {
@@ -53,6 +54,7 @@ export default function Home() {
       <p>Status: {isConnected ? "connected" : "disconnected"}</p>
       <p>Transport: {transport}</p>
       <input value={message} onChange={handleMessageChange} />
+      <Button>Ahoj</Button>
     </div>
   );
 }

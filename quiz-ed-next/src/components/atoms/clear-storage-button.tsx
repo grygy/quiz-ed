@@ -1,15 +1,18 @@
 "use client";
+
+import { Button } from "@kiwicom/orbit-components";
+
 const ClearStorageButton = () => {
   if (process.env.NODE_ENV === "development") {
     return (
-      <button
-        className="btn btn-error"
+      <Button
+        type="criticalSubtle"
         onClick={() => {
           localStorage.clear();
         }}
       >
         Clear local storage
-      </button>
+      </Button>
     );
   }
   return null;
