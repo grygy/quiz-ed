@@ -18,7 +18,7 @@ const useJoinPlayer = (
       }
 
       updateGameState((state) => {
-        const newGameState = addOrUpdatePlayer(playerPayload.player, state);
+        const newGameState = addOrUpdatePlayer(state, playerPayload.player);
         return newGameState;
       });
 

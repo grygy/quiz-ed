@@ -19,9 +19,9 @@ const usePlayerAnswer = (
 
       updateGameState((state) => {
         const newGameState = addAnswerForQuestion(
+          state,
           playerAnswerPayload.questionId,
-          playerAnswerPayload.answer,
-          state
+          playerAnswerPayload.answer
         );
         return newGameState;
       });

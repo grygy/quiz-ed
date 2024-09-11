@@ -14,7 +14,7 @@ type Props = {
 };
 
 const GameStage = ({ gameState, playerId }: Props) => {
-  const player = getPlayer(playerId, gameState);
+  const player = getPlayer(gameState, playerId);
 
   if (gameState.state === "lobby") {
     return <h3>Hi {player?.name}, sit tight. Others are joining...</h3>;
@@ -39,7 +39,7 @@ const GameStage = ({ gameState, playerId }: Props) => {
     return <h3>{isPlayersCorrect ? "Correct" : "Wrong"}</h3>;
   }
 
-  if (hasPlayerAnswered(playerId, currentQuestion)) {
+  if (hasPlayerAnswered(currentQuestion, playerId)) {
     return <h3>Waiting for other players to answer...</h3>;
   }
 

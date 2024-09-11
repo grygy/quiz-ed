@@ -3,8 +3,8 @@ import { Player } from "@/models/player";
 import { Question } from "@/models/question";
 
 export const addOrUpdatePlayer = (
-  player: Player,
-  gameState: GameState
+  gameState: GameState,
+  player: Player
 ): GameState => {
   const playerIndex = gameState.players.findIndex((p) => p.id === player.id);
   if (playerIndex === -1) {
@@ -23,20 +23,20 @@ export const addOrUpdatePlayer = (
   };
 };
 
-export const getPlayer = (playerId: string, gameState: GameState) => {
+export const getPlayer = (gameState: GameState, playerId: string) => {
   const player = gameState.players.find((p) => p.id === playerId);
   return player;
 };
 
-export const hasPlayerAnswered = (playerId: string, question: Question) => {
+export const hasPlayerAnswered = (question: Question, playerId: string) => {
   return question.answers.some((answer) => answer.playerId === playerId);
 };
 
 export const getPlayersThatDidNotAnswer = (
-  question: Question,
-  gameState: GameState
+  gameState: GameState,
+  question: Question
 ) => {
   return gameState.players.filter(
-    (player) => !hasPlayerAnswered(player.id, question)
+    (player) => !hasPlayerAnswered(question, player.id)
   );
 };
